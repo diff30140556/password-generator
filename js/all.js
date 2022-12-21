@@ -126,10 +126,8 @@ function generating() {
     if (finalValidation === false) {
         randomType = [];
         passwordValidation = {};
-        console.log(pass)
         render = pass;
     } else {
-        console.log(pass)
         generating(randomType);
     }
 }
