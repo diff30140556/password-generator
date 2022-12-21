@@ -1,73 +1,92 @@
 // Assignment code here
 
-// Declare passwordType to save the length and if users want to include special characters
+// Declare an object to save the length and which type of characters should be included that selected by the user 
 var passwordType = {
     length: '',
+    isIncludeLowerCharacters:'',
+    isIncludeUpperCharacters:'',
+    isIncludeNumber:'',
     isIncludeSpecial: ''
 }
-// Declare an empty string to save the final password to render
+// Declare an empty object to save the number of each type of character
+let passwordValidation = {};
+// Declare an empty string for rendering the final password
 var render = '';
-// Declare an array for pick up the password type randomly
-var randomType = ['lower', 'upper', 'num'];
+// Declare an array for pick up the characters type randomly
+var randomType = [];
 
 
-// Password creating start! Ask users to choose password length
+// Password creating start! Ask user input the password length
 function generatePassword() {
     let passLength = parseInt(prompt("Enter you length you want for the password (at least 8 characters, no more than 128 characters)"));
 
-    // re-ask if the length doesn't meet the standard
+    // ask the user inputs the length again if it doesn't meet the standard
     if (typeof (passLength) === 'number' && 7 < passLength && passLength < 129) {
         passwordType.length = passLength;
         characterType();
         // return a value for "passwordText" rendering
-        return render
+        return render;
     } else {
-        generatePassword();
-        return render
+        alert("The password has to be at least 8 characters, no more than 128 characters!")
+        return generatePassword();
     }
 }
 
-// Ask users wether include special characters or not
+// Ask which type of characters the user wants to include
 function characterType() {
+    let lower = confirm("Do you want to include lower characters?");
+    let upper = confirm("Do you want to include upper characters?");
+    let num = confirm("Do you want to include numbers?");
     let special = confirm("Do you want to include special characters?");
+    // saved the results to passwordType object
+    passwordType.isIncludeLowerCharacters = lower;
+    passwordType.isIncludeUpperCharacters = upper;
+    passwordType.isIncludeNumber = num;
     passwordType.isIncludeSpecial = special;
-    // if yes, add "special" to passwordType array
-    if (passwordType.isIncludeSpecial === true) {
-        randomType.push('special');
-        generating(randomType);
-    } else {
-        // if not, use the original array
-        generating(randomType)
+    // update the randomType array & passwordValidation object
+    if (passwordType.isIncludeLowerCharacters) {
+        randomType.push('lower');
+        passwordValidation.lower = 0;
     }
+    if (passwordType.isIncludeUpperCharacters) {
+        randomType.push('upper');
+        passwordValidation.upper = 0;
+    }
+    if (passwordType.isIncludeNumber) {
+        randomType.push('num');
+        passwordValidation.num = 0;
+    }
+    if (passwordType.isIncludeSpecial) {
+        randomType.push('special');
+        passwordValidation.spec = 0;
+    }
+    //if the length of randomType is 0, ask the user to pick at least 1 type of characters 
+    if(randomType.length === 0){
+        alert("You must choose at least 1 characters type ")
+        characterType();
+    }else {
+        generating();
+    }
+    
 }
 
 // Generating the password!
-function generating(type) {
-    // this is the length for randomType array
-    let randomLength = type.length;
-    // This is the total length that users input
+function generating() {
+    // this is the length of randomType array
+    let randomLength = randomType.length;
+    // This is the password length that user inputted
     let length = passwordType.length;
-    // Declare an object for validation
-    let passwordValidation = {
-        lower: 0,
-        upper: 0,
-        num: 0,
-    }
-    // Declare an empty sting to save the password
+    
+    // Declare an empty string to save the generated password
     let pass = '';
-    // if users want to include special characters, add spec to the object
-    if (passwordType.isIncludeSpecial) {
-        passwordValidation.spec = 0;
-    }
 
     // run loop to create the password until it meets the standard
-
-    // pick what type of the password should be generated (lower, upper, number and special characters)
+    // randomly pick a type of characters first(lower, upper, number or special characters)
     for (i = 0; i < length; i++) {
         let arrNum = Math.floor(Math.random() * randomLength);
-        let pick = type[arrNum];
-
-        // generating a specific single characters
+        let pick = randomType[arrNum];
+        
+        // generating a specific type of single characters and add it into the empty string
         // generating a random number
         if (pick === 'num') {
             let randomNum = Math.floor(Math.random() * 10);
@@ -90,7 +109,7 @@ function generating(type) {
         }
         // generating a random special characters
         else {
-            let special = [" ", "!", "”", "#", "$", "%", "&", "’", "(", ")", "*", "+", ",", "-", ".", "/", ":", ";", "<", "=", ">", "?", "@", "[", "]", "^", "_", "`", "{", "|", "}", "~"];
+            let special = [" ", "!", "”", "#", "$", "%", "&", "’", "(", ")", "*", "+", ",", "-", ".", "/", ":", ";", "<", "=", ">", "?", "@", "[", "]", "^", "_", "`", "{", "|", "}", "~","\\"];
             let specialLength = special.length;
             let specNum = Math.floor(Math.random() * specialLength);
             let specialCha = special[specNum];
@@ -99,21 +118,23 @@ function generating(type) {
         }
     }
 
-    // validating if the generated password has meet the standard, if not, run generating again
-
+    // validating the password to see if it meets the standard, if not, create another one
     // if passwordValidation includes 0, means it doesn't meet the standard
     let finalValidation = Object.values(passwordValidation).includes(0);
 
+    // if the password meets the standard, pass the value to "render" and clear the original array & object
     if (finalValidation === false) {
-        console.log(pass);
-        randomType = ['lower', 'upper', 'num'];
+        randomType = [];
+        passwordValidation = {};
+        console.log(pass)
         render = pass;
     } else {
-        console.log(pass);
+        console.log(pass)
         generating(randomType);
     }
 }
 
+// ***-------Starter Code--------*** //
 // Get references to the #generate element
 var generateBtn = document.querySelector("#generate");
 
@@ -121,9 +142,7 @@ var generateBtn = document.querySelector("#generate");
 function writePassword() {
     var password = generatePassword();
     var passwordText = document.querySelector("#password");
-
     passwordText.value = password;
-
 }
 
 // Add event listener to generate button
