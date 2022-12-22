@@ -82,7 +82,7 @@ function generating() {
 
     // run loop to create the password until it meets the standard
     // randomly pick a type of characters first(lower, upper, number or special characters)
-    for (i = 0; i < length; i++) {
+    for (let i = 0; i < length; i++) {
         let arrNum = Math.floor(Math.random() * randomLength);
         let pick = randomType[arrNum];
         
